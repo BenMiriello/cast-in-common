@@ -1,25 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useCallback } from "react";
+// import logo from './logo.svg';
+import "./App.css";
+import API_KEY from "./api-key";
+import { debounce } from "lodash";
+
+const MovieCard = ({ data }) => {
+  console.log(data);
+  return <div className="movie-card">{JSON.stringify(data)}</div>;
+};
 
 function App() {
+  const [searchText, setSearchText] = useState("");
+  const [results, setResults] = useState([]);
+
+  const getSearchResults = debounce(
+    () => {
+      if (searchText.length >= 1) {
+        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=en-US&query=${searchText}&page=1&include_adult=false`)
+          .then(r => r.json())
+          .then(response => setResults(response.results))
+      }
+    }, 300 
+  );
+
+  const handleOnChange = e => {
+    setSearchText(e.target.value);
+    getSearchResults();
+  };
+
+  const resultCards = () => {
+    if (results.length < 1) return null;
+    console.log(results)
+    return results.map((data) => <MovieCard data={data} />);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="search-container">
+        <input
+          className="search-input"
+          value={searchText}
+          onChange={handleOnChange}
+        />
+      </div>
+      <div className="movie-card-container">{resultCards()}</div>
+    </>
   );
 }
 
