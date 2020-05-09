@@ -39,11 +39,37 @@
 
 .search-container {
   text-align: center;
-  margin-top: 250px;
+  margin-top: 100px;
 }
 
 .search-input {
   width: 250px;
   height: 40px;
   font-size: 150%;
+}
+
+.movie-card-container {
+  text-align: center;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 30px;
+  display: flex;
+  /* justify-content: space-between; */
+  /* flex-wrap: wrap; */
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.movie-card {
+  float: left;
+  width: 200px;
+  height: 300px;
+  display: block;
+  text-align: center;
+  margin: auto;
+  margin: 10px;
+}
+
+.poster {
+  text-align: center;
 }
