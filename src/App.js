@@ -7,6 +7,7 @@ import MovieCard from "./MovieCard";
 function App() {
   const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState([]);
+  const [selections, setSelections] = useState([]);
 
   const getSearchResults = debounce(() => {
     if (searchText.length >= 1) {
@@ -20,30 +21,57 @@ function App() {
         .then((r) => r.json())
         .then((response) => setResults(response.results));
     }
-  }, 300);
+  }, 500);
 
-  const handleOnChange = (e) => {
+  const handleSearchTextChange = (e) => {
     setSearchText(e.target.value);
     getSearchResults();
   };
 
-  const resultCards = () => {
-    if (results.length < 1) return null;
-    console.log(results);
-    return results.map((data) => <MovieCard data={data} />);
+  const handleCardClick = (id) => {
+    // debugger
+    if (selections.some((movie) => movie.id === id)) {
+      setSelections([...selections.filter((movie) => movie.id != id)]);
+    } else {
+      const newSelection = results.find((movie) => movie.id === id);
+      setSelections((prev) => [newSelection, ...prev]);
+    }
   };
 
+  const showResults = () =>
+    results.map((data) => (
+      <MovieCard
+        result
+        key={data.id}
+        title={data.title}
+        poster={data.poster_path}
+        addMovie={() => handleCardClick(data.id)}
+      />
+    ));
+
+  const showMovieCards = () =>
+    selections.map((data) => (
+      <MovieCard
+        key={data.id}
+        title={data.title}
+        poster={data.poster_path}
+      />
+    ));
+
   return (
-    <>
+    <div>
       <div className="search-container">
         <input
           className="search-input"
           value={searchText}
-          onChange={handleOnChange}
+          onChange={handleSearchTextChange}
         />
       </div>
-      <div className="movie-card-container">{resultCards()}</div>
-    </>
+      <div className="movie-card-container">
+        {searchText != "" ? showResults() : null}
+      </div>
+      <div className="movie-card-container">{showMovieCards(selections, true)}</div>
+    </div>
   );
 }
 

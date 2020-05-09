@@ -1,8 +1,11 @@
 import React from "react";
 
-const MovieCard = ({ data }) => {
-  return <div className="movie-card">
-      <img className="poster" src={"https://image.tmdb.org/t/p/w185_and_h278_bestv2" + data.poster_path} alt={data.title} />
+const MovieCard = ({ result, key, title, poster, addMovie }) => {
+
+    const handleClick = () => result ? addMovie(key) : null;
+    
+  return <div className="movie-card" onClick={handleClick} >
+      <img className="poster" src={"https://image.tmdb.org/t/p/w185_and_h278_bestv2" + poster} alt={title} />
   </div>;
 };
 
