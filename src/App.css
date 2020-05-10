@@ -54,8 +54,7 @@
   margin-left: 5%;
   margin-top: 30px;
   display: flex;
-  justify-content: space-around;
-  /* flex-wrap: wrap; */
+  justify-content: center;
   overflow-x: scroll;
   overflow-y: hidden;
   height: 320px;
