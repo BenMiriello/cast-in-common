@@ -32,7 +32,6 @@ const Cast = ({ movies }) => {
         getCredits(movie.id);
       }
     });
-
   }, [movies, allCredits]);
 
   // when allCredits state updates, compare all movies again
@@ -40,42 +39,41 @@ const Cast = ({ movies }) => {
     if (movies.length === 1) {
       setCastInCommon(allCredits[0]);
     } else if (movies.length > 1) {
-      // set shared cast obj to = cast obj for first movie
-      // then for each cast member, check all other cast objs
-      // & remove if it's not found
-      // repeat for crew
-
       const otherCredits = Object.assign([], allCredits);
       otherCredits.shift();
-      const tempCastInCommon = Object.assign({}, allCredits[0]);
+      const tempCastInCommon = Object.assign({cast: []}, { cast: allCredits[0].cast });
 
-      const compareCredits = (cast) => {
-        for (let i = 0; i < tempCastInCommon[cast].length; i++) {
-          if (
-            !allCredits.every((credits) =>
-              credits[cast].some(
-                (member) => member.id === tempCastInCommon[cast][i].id
-              )
+      for (let i = 0; i < tempCastInCommon.cast.length; i++) {
+        if (
+          !allCredits.every((credits) =>
+            credits.cast.some(
+              (member) => member.id === tempCastInCommon.cast[i].id
             )
-          ) {
-            tempCastInCommon[cast].splice(i, 1);
-          }
+          )
+        ) {
+          tempCastInCommon.cast.splice(i, 1);
+        } else {
+          otherCredits.forEach((credits) => {
+            let common = credits.cast.find(
+              (member) => member.id === tempCastInCommon.cast[i].id
+            );
+            while (common) {
+              tempCastInCommon.cast[i].character += ", " + common.character;
+              common.character = "";
+              common = credits.cast.find(
+                (member) => member.id === tempCastInCommon.cast[i].id
+              );
+            }
+          });
         }
-      };
-
-      compareCredits("cast");
-      compareCredits("crew");
-
-      // HERE: combine multiple credits for same person
-      // maybe create new member obj with job for crew and character for cast
+      }
 
       setCastInCommon(tempCastInCommon);
-    } else setCastInCommon({cast: [], crew: []});
-
+    } else setCastInCommon({ cast: [] });
   }, [allCredits]);
 
   const renderCastCards = () => {
-    if (!castInCommon?.cast) return null;
+    if (!castInCommon?.cast || !castInCommon.cast[0]) return null;
     return [
       ...castInCommon.cast.map((member) => {
         if (member)
@@ -84,16 +82,7 @@ const Cast = ({ movies }) => {
               key={member.id}
               name={member.name}
               image={member.profile_path}
-            />
-          );
-      }),
-      ...castInCommon.crew.map((member) => {
-        if (member)
-          return (
-            <CastCard
-              key={member.id}
-              name={member.name}
-              image={member.profile_path}
+              character={member.character}
             />
           );
       }),
@@ -108,7 +97,6 @@ const Cast = ({ movies }) => {
 };
 
 export default Cast;
-
 
 const example = {
   id: 11,
