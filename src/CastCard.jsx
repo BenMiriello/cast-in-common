@@ -1,6 +1,6 @@
 import React from "react";
 
-const CastCard = ({ image, name }) => {
+const CastCard = ({ image, name, character }) => {
   return (
     <div className="movie-card">
       <img
@@ -9,6 +9,7 @@ const CastCard = ({ image, name }) => {
         alt={name}
       />
       <p>{name}</p>
+      <p>{character}</p>
     </div>
   );
 };
